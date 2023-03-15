@@ -16,12 +16,11 @@ app.get('/', (_request, response) => {
 app.get('/talker', async (req, res) => {
   const talkers = await readTalkers();
 
-  talkers.lenght === ZERO
-    ? res.status(HTTP_OK_STATUS).json([])
-    : res.status(HTTP_OK_STATUS).json(talkers)
+  if (talkers.length === ZERO) { res.status(HTTP_OK_STATUS).json([]); }
+
+  return res.status(HTTP_OK_STATUS).json(talkers);
 });
 
 app.listen(PORT, () => {
   console.log('Online');
 });
-
