@@ -1,5 +1,6 @@
 const express = require('express');
-const { readTalkers } = require('./fsUtils/fsReadFile');
+const { readTalkers } = require('./utils/fsReadFile');
+const { generateToken } = require('./utils/generateToken');
 
 const app = express();
 app.use(express.json());
@@ -14,7 +15,7 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
-app.get('/talker', async (req, res) => {
+app.get('/talker', async (_req, res) => {
   const talkers = await readTalkers();
 
   if (talkers.length === ZERO) { return res.status(HTTP_OK_STATUS).json([]); }
@@ -36,6 +37,12 @@ app.get('/talker/:id', async (req, res) => {
   }
 
   return res.status(HTTP_OK_STATUS).json(data);
+});
+
+app.post('/login', (req, res) => {
+  const token = generateToken();
+
+  return res.status(HTTP_OK_STATUS).json({ token });
 });
 
 app.listen(PORT, () => {
