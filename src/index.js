@@ -78,6 +78,34 @@ app.post('/talker',
   return res.status(201).json(newTalker);
 });
 
+app.put('/talker/:id',
+  authToken,
+  authName,
+  authAge,
+  authTalk,
+  authWatchedAt,
+  authRate,
+  async (req, res) => {
+  const talkers = await readTalkers();
+  const { name, age, talk } = req.body;
+  const { id: requestId } = req.params;
+  
+  const data = talkers.find((talker) => talker.id === +requestId);
+
+  if (!data) { 
+    return res.status(HTTP_NOT_FOUND_STATUS).json({
+      message: 'Pessoa palestrante não encontrada',
+    });
+  }
+
+  data.name = name;
+  data.age = age;
+  data.talk = talk;
+
+  writeTalkers(talkers);
+  return res.status(HTTP_OK_STATUS).json(data);
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
