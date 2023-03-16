@@ -1,7 +1,14 @@
 const express = require('express');
+const { authAge } = require('./middlewares/authAge');
 const { authEMail } = require('./middlewares/authEmail');
+const { authName } = require('./middlewares/authName');
 const { authPassword } = require('./middlewares/authPassword');
-const { readTalkers } = require('./utils/fsReadFile');
+const { authRate } = require('./middlewares/authRate');
+const { authTalk } = require('./middlewares/authTalk');
+const { authToken } = require('./middlewares/authToken');
+const { authWatchedAt } = require('./middlewares/authWatchedAt');
+const { readTalkers } = require('./utils/fsReadTalkers');
+const { writeTalkers } = require('./utils/fsWriteTalkers');
 const { generateToken } = require('./utils/generateToken');
 
 const app = express();
@@ -45,6 +52,31 @@ app.post('/login', authEMail, authPassword, (req, res) => {
   const token = generateToken();
 
   return res.status(HTTP_OK_STATUS).json({ token });
+});
+
+app.post('/talker',
+  authToken,
+  authName,
+  authAge,
+  authTalk,
+  authWatchedAt,
+  authRate,
+  async (req, res)=> {
+  const {name, age, talk:{rate, watchedAt}} = req.body;
+  const talkers = await readTalkers();
+  const lastId = talkers.at(-1).id;
+
+
+  const newTalker = {
+    name,
+    age,
+    id: lastId + 1,
+    talk: {watchedAt, rate}
+  }
+  const newTalkers = talkers.push(newTalker)
+  
+  writeTalkers(talkers);
+  return res.status(201).json(newTalker)
 });
 
 app.listen(PORT, () => {
