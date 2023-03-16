@@ -7,6 +7,7 @@ const { authRate } = require('./middlewares/authRate');
 const { authTalk } = require('./middlewares/authTalk');
 const { authToken } = require('./middlewares/authToken');
 const { authWatchedAt } = require('./middlewares/authWatchedAt');
+const { queryRate } = require('./middlewares/queryRate');
 const { readTalkers } = require('./utils/fsReadTalkers');
 const { writeTalkers } = require('./utils/fsWriteTalkers');
 const { generateToken } = require('./utils/generateToken');
@@ -32,13 +33,23 @@ app.get('/talker', async (_req, res) => {
   return res.status(HTTP_OK_STATUS).json(talkers);
 });
 
-app.get('/talker/search', authToken, async (req, res) => {
-  const { q } = req.query;
+app.get('/talker/search', authToken, queryRate, async (req, res) => {
+  const { q, rate } = req.query;
   const talkers = await readTalkers();
 
-  if (!q) { return res.status(HTTP_OK_STATUS).json(talkers); }
-  
-  const data = talkers.filter((talker) => talker.name.includes(q));
+  if (!rate) {
+    const qSearch = talkers.filter((talker) => talker.name.includes(q));
+    return res.status(HTTP_OK_STATUS).json(qSearch); 
+  }
+
+  if (!q) {
+    const rateSearch = talkers.filter(({ talk }) => talk.rate === +rate);
+    return res.status(HTTP_OK_STATUS).json(rateSearch); 
+  }
+
+  const data = talkers
+    .filter(({ talk }) => talk.rate === +rate)
+    .filter((talker) => talker.name.includes(q));
 
   if (data.length === ZERO) { return res.status(HTTP_OK_STATUS).json([]); }
 
