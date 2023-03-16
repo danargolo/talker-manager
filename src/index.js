@@ -32,6 +32,19 @@ app.get('/talker', async (_req, res) => {
   return res.status(HTTP_OK_STATUS).json(talkers);
 });
 
+app.get('/talker/search', authToken, async (req, res) => {
+  const { q } = req.query;
+  const talkers = await readTalkers();
+
+  if (!q) { return res.status(HTTP_OK_STATUS).json(talkers); }
+  
+  const data = talkers.filter((talker) => talker.name.includes(q));
+
+  if (data.length === ZERO) { return res.status(HTTP_OK_STATUS).json([]); }
+
+  return res.status(HTTP_OK_STATUS).json(data);
+});
+
 app.get('/talker/:id', async (req, res) => {
   const talkers = await readTalkers();
 
