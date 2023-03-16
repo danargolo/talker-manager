@@ -1,4 +1,6 @@
 const express = require('express');
+const { authEMail } = require('./middlewares/authEmail');
+const { authPassword } = require('./middlewares/authPassword');
 const { readTalkers } = require('./utils/fsReadFile');
 const { generateToken } = require('./utils/generateToken');
 
@@ -39,7 +41,7 @@ app.get('/talker/:id', async (req, res) => {
   return res.status(HTTP_OK_STATUS).json(data);
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', authEMail, authPassword, (req, res) => {
   const token = generateToken();
 
   return res.status(HTTP_OK_STATUS).json({ token });
