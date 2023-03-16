@@ -10,7 +10,7 @@ const authAge = (req, res, next) => {
     });
   }
 
-  if (age < MINIMUM_AGE ||  !Number.isInteger(age)) {
+  if (age < MINIMUM_AGE || !Number.isInteger(age)) {
     return res.status(HTTP_INVALID_STATUS).json({
       message: 'O campo "age" deve ser um número inteiro igual ou maior que 18',
     });

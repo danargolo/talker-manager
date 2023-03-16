@@ -9,7 +9,7 @@ const writeTalkers = async (newTalker) => {
     const data = JSON.stringify(newTalker);
     await fs.writeFile(talkerPath, data);
   } catch (e) {
-    console.error("erro aqui:", e.message);
+    console.error(e.message);
   }
 };
 

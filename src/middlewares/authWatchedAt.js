@@ -6,7 +6,7 @@ const authWatchedAt = (req, res, next) => {
 
   if (!watchedAt) {
     return res.status(HTTP_INVALID_STATUS).json({
-      message: `O campo "watchedAt" é obrigatório`,
+      message: 'O campo "watchedAt" é obrigatório',
     });
   }
 

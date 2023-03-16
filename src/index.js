@@ -61,22 +61,21 @@ app.post('/talker',
   authTalk,
   authWatchedAt,
   authRate,
-  async (req, res)=> {
-  const {name, age, talk:{rate, watchedAt}} = req.body;
+  async (req, res) => {
+  const { name, age, talk: { rate, watchedAt } } = req.body;
   const talkers = await readTalkers();
   const lastId = talkers.at(-1).id;
-
 
   const newTalker = {
     name,
     age,
     id: lastId + 1,
-    talk: {watchedAt, rate}
-  }
-  const newTalkers = talkers.push(newTalker)
+    talk: { watchedAt, rate },
+  };
+  talkers.push(newTalker);
   
   writeTalkers(talkers);
-  return res.status(201).json(newTalker)
+  return res.status(201).json(newTalker);
 });
 
 app.listen(PORT, () => {
