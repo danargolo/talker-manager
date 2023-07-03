@@ -6,7 +6,9 @@ const ZERO = 0;
 const checkRate = (rate) => !Number.isInteger(rate) || rate < MIN_RATE || rate > MAX_RATE;
 
 const queryRate = (req, res, next) => {
-  const { rate } = req.query;
+  const { q, rate } = req.query;
+
+  if(q && !rate) { return next()}
   
   if (!rate && +rate !== ZERO) {
     return res.status(HTTP_INVALID_STATUS).json({

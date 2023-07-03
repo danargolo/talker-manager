@@ -33,15 +33,16 @@ app.get('/talker', async (_req, res) => {
   return res.status(HTTP_OK_STATUS).json(talkers);
 });
 
-app.get('/talker/search', authToken, queryRate, async (req, res) => {
+app.get('/talker/search', authToken, async (req, res) => {
   const { q, rate } = req.query;
   const talkers = await readTalkers();
 
   if (!rate) {
-    const qSearch = talkers.filter((talker) => talker.name.includes(q));
+    const qSearch = talkers.filter(({name}) => name.toLowerCase().includes(q));
     return res.status(HTTP_OK_STATUS).json(qSearch); 
   }
 
+  // if (!q) { return res.status(HTTP_OK_STATUS).json(talkers); }
   if (!q) {
     const rateSearch = talkers.filter(({ talk }) => talk.rate === +rate);
     return res.status(HTTP_OK_STATUS).json(rateSearch); 
@@ -49,9 +50,11 @@ app.get('/talker/search', authToken, queryRate, async (req, res) => {
 
   const data = talkers
     .filter(({ talk }) => talk.rate === +rate)
-    .filter((talker) => talker.name.includes(q));
+    .filter(({name}) => name.toLowerCase().includes(q));
+  
+  console.log(data);
 
-  if (data.length === ZERO) { return res.status(HTTP_OK_STATUS).json([]); }
+  if (data.length === ZERO) { return res.status(HTTP_NOT_FOUND_STATUS).json([]); }
 
   return res.status(HTTP_OK_STATUS).json(data);
 });
